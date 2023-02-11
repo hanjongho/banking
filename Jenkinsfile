@@ -38,6 +38,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
+                echo  '배포와 관련된 몇 가지 단계를 수행합니다.'
             }
         }
     }
