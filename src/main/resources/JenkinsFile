@@ -38,8 +38,13 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo  '배포와 관련된 몇 가지 단계를 수행합니다.'
-            }
+               dir('banking/build/libs') {
+                   sshagent(credentials: ['key-dallog']) {
+                        sh 'scp banking-0.0.1-SNAPSHOT.jar ubuntu@http://3.34.109.136:/home/ubuntu'
+                        sh 'ssh ubuntu@http://3.34.109.136 "sh run.sh" &'
+                   }
+               }
+           }
         }
     }
 }
