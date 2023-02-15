@@ -4,8 +4,6 @@ import java.util.Arrays;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -90,22 +88,22 @@ public class GlobalExceptionHandler {
     /**
      * Authentication 객체가 필요한 권한을 보유하지 않은 경우 발생합
      */
-    @ExceptionHandler(AccessDeniedException.class)
-    protected ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
-        log.error("handleAccessDeniedException", e);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode._UNAUTHORIZED);
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-    }
+    // @ExceptionHandler(AccessDeniedException.class)
+    // protected ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
+    //     log.error("handleAccessDeniedException", e);
+    //     final ErrorResponse response = ErrorResponse.of(ErrorCode._UNAUTHORIZED);
+    //     return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    // }
 
     /**
      * 로그인 정보가 일치하지 않을 때
      */
-    @ExceptionHandler({BadCredentialsException.class})
-    protected ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException e) {
-        log.error("handleBadCredentialsException", e);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.LOGIN_FAILED);
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-    }
+    // @ExceptionHandler({BadCredentialsException.class})
+    // protected ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException e) {
+    //     log.error("handleBadCredentialsException", e);
+    //     final ErrorResponse response = ErrorResponse.of(ErrorCode.LOGIN_FAILED);
+    //     return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    // }
 
     /**
      * 파일 업로드 시 멀티파트 헤더를 설정하지 않았을때 에러
