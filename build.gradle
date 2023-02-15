@@ -22,29 +22,22 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'mysql:mysql-connector-java:8.0.16'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	// 스웨거, spring security
-	implementation 'io.springfox:springfox-boot-starter:3.0.0'
-	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// spring security
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	// json
-	implementation group: 'org.json', name: 'json', version: '20220320'
-
-	// jwt
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
-	implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
-	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
-
-	//stringUtils
+	// stringUtils
 	implementation 'org.apache.commons:commons-lang3:3.12.0'
 
+	// guava
+	implementation("com.google.guava:guava:31.1-jre")
 }
 
 tasks.named('test') {
