@@ -29,22 +29,30 @@ public class MemberController {
 
 	private final MemberService memberService;
 
+	// 회원가입 API
 	@PostMapping("/join")
 	public ApiResult<MemberResponseDto> join(@Valid @RequestBody MemberRequestDto memberRequestDto) {
-		Member member = memberService.join(memberRequestDto.getLoginId(), memberRequestDto.getPassword());;
-		return OK(new MemberResponseDto(member.getId()));
+		Member member = memberService.join(
+				memberRequestDto.getLoginId(),
+				memberRequestDto.getPassword(),
+				memberRequestDto.getAmount());
+		return OK(
+				new MemberResponseDto(member.getId())
+		);
 	}
 
+	// 내 친구 목록 조회 API
 	// TODO id -> JwtAuthentication 객체의 id를 불러오는 과정으로 변경
 	@GetMapping("/connections")
 	public ApiResult<List<ConnectedMemberResponseDto>> connections(@RequestBody Map<String, String> inputMap) {
 		return OK(
-			memberService.findAllConnectedMember(inputMap.get("loginId")).stream()
-			.map(ConnectedMemberResponseDto::new)
-			.collect(Collectors.toList())
+				memberService.findAllConnectedMember(inputMap.get("loginId")).stream()
+						.map(ConnectedMemberResponseDto::new)
+						.collect(Collectors.toList())
 		);
 	}
 
+	// 친구 추가 API
 	@PostMapping("/connections")
 	// TODO id -> JwtAuthentication 객체의 id를 불러오는 과정으로 변경
 	public void addConnection(@RequestBody Map<String, String> inputMap) {
