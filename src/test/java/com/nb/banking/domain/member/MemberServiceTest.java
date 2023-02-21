@@ -2,7 +2,7 @@ package com.nb.banking.domain.member;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -71,7 +71,7 @@ class MemberServiceTest {
 			//given
 			String myId = "Jongho";
 			String myPassword = "1234";
-			memberService.join(myId, myPassword, 0L);
+			Member me = memberService.join(myId, myPassword, 0L);
 
 			String friendId1 = "JonghoFriend1";
 			String friendPassword1 = "5678";
@@ -85,12 +85,16 @@ class MemberServiceTest {
 			memberService.addConnection(myId, friendId2);
 
 			//when
-			List<Member> friendList = memberService.findAllConnectedMember(myId);
+			Set<Member> friendList = memberService.findAllConnectedMember(myId);
 
 			//then
-			assertEquals(2, friendList.size());
-			assertEquals(myId, friend1.getFriendList().get(0).getLoginId());
-			assertEquals(myId, friend2.getFriendList().get(0).getLoginId());
+			assertAll(
+					() -> assertEquals(2, friendList.size()),
+					() -> assertTrue(me.getFriendList().contains(friend1)),
+					() -> assertTrue(me.getFriendList().contains(friend1)),
+					() -> assertTrue(friend1.getFriendList().contains(me)),
+					() -> assertTrue(friend2.getFriendList().contains(me))
+			);
 		}
 
 	}
@@ -111,16 +115,16 @@ class MemberServiceTest {
 			String friendPassword = "5678";
 			Member you = memberService.join(friendId, friendPassword, 0L);
 
+			//when
 			memberService.addConnection(myId, friendId);
 
-			//when
-			List<Member> friendList = memberService.findAllConnectedMember(myId);
-
 			//then
-			assertEquals(friendList.size(), 1);
-			assertEquals(friendList.get(0).getLoginId(), friendId);
-			assertTrue(you.getFriendList().contains(me));
-			assertTrue(me.getFriendList().contains(you));
+			assertAll(
+					() -> assertEquals(1, me.getFriendList().size()),
+					() -> assertEquals(1, you.getFriendList().size()),
+					() -> assertTrue(me.getFriendList().contains(you)),
+					() -> assertTrue(you.getFriendList().contains(me))
+			);
 		}
 
 		@Test
@@ -129,11 +133,11 @@ class MemberServiceTest {
 			//given
 			String myId = "Jongho";
 			String myPassword = "1234";
-			Member me = memberService.join(myId, myPassword, 0L);
+			memberService.join(myId, myPassword, 0L);
 
 			String friendId = "JonghoFriend";
 			String friendPassword = "5678";
-			Member you = memberService.join(friendId, friendPassword, 0L);
+			memberService.join(friendId, friendPassword, 0L);
 
 			memberService.addConnection(myId, friendId);
 
