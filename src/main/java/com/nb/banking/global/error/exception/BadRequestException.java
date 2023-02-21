@@ -8,18 +8,19 @@ import lombok.ToString;
 @Getter
 @ToString
 public class BadRequestException extends BusinessException {
-    private String message;
-    public BadRequestException(String message) {
-        super(ErrorCode._BAD_REQUEST);
-        this.message = message;
-    }
+	private String message;
 
-    public BadRequestException(ErrorCode errorCode, String message) {
-        super(errorCode);
-        this.message = message;
-    }
+	public BadRequestException(String message) {
+		super(ErrorCode._BAD_REQUEST);
+		this.message = message;
+	}
 
-    public BadRequestException(ErrorCode errorCode) {
-        super(errorCode);
-    }
+	public BadRequestException(ErrorCode errorCode, String message) {
+		super(errorCode);
+		this.message = message;
+	}
+
+	public BadRequestException(ErrorCode errorCode) {
+		super(errorCode);
+	}
 }

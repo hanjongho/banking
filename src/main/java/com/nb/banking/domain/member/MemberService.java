@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.*;
 import static com.nb.banking.global.error.ErrorCode.*;
 import static org.apache.logging.log4j.util.Strings.*;
 
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -26,7 +25,8 @@ public class MemberService {
 	@Transactional
 	public Member join(String loginId, String password, Long amount) {
 		checkArgument(isNotEmpty(password), "password must be provided");
-		checkArgument(password.length() >= 4 && password.length() <= 15, "password length must be between 4 and 15 characters.");
+		checkArgument(password.length() >= 4 && password.length() <= 15,
+				"password length must be between 4 and 15 characters.");
 		checkArgument(isNotEmpty(loginId), "loginId must be provided");
 
 		memberRepository.findByLoginId(loginId).ifPresent((m -> {
