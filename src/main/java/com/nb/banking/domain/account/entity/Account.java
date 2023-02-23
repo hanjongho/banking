@@ -10,6 +10,7 @@ import javax.persistence.OneToOne;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nb.banking.domain.member.entity.Member;
 import com.nb.banking.global.config.entity.BaseTimeEntity;
 
@@ -30,6 +31,7 @@ public class Account extends BaseTimeEntity {
 	private Long amount;
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
+	@JsonIgnore
 	private Member owner;
 
 	public Account(Long amount) {

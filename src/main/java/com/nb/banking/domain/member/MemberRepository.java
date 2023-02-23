@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.persistence.LockModeType;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -22,5 +23,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	@Lock(value = LockModeType.PESSIMISTIC_WRITE)
 	@Query("select m from Member m where m.loginId =:loginId")
 	Optional<Member> findByWithPessimisticLock(@Param("loginId") String loginId);
+
+	@EntityGraph(attributePaths = "authorities")
+	Optional<Member> findOneWithAuthoritiesByLoginId(String loginId);
 
 }

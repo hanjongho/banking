@@ -1,0 +1,6 @@
+jwt:
+  header: Authorization
+  #HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
+  #echo 'numble-banking-project-jwt-hanjongho-numble-banking-project-jwt-hanjongho-numble-banking-project-jwt-hanjongho'|base64
+  secret: bnVtYmxlLWJhbmtpbmctcHJvamVjdC1qd3QtaGFuam9uZ2hvLW51bWJsZS1iYW5raW5nLXByb2plY3Qtand0LWhhbmpvbmdoby1udW1ibGUtYmFua2luZy1wcm9qZWN0LWp3dC1oYW5qb25naG8K
+  token-validity-in-seconds: 86400
