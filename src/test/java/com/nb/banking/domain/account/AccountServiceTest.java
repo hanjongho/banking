@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.nb.banking.domain.member.MemberRepository;
 import com.nb.banking.domain.member.MemberService;
+import com.nb.banking.domain.member.dto.MemberDto;
 import com.nb.banking.domain.member.entity.Member;
 import com.nb.banking.global.error.exception.BusinessException;
 
@@ -58,10 +59,19 @@ class AccountServiceTest {
 		@DisplayName("성공")
 		void success() throws Exception {
 			//given
-			String senderId = "sender1";
-			String senderPw = "1234";
-			Member sender = memberService.join(senderId, senderPw, 100000L);
+			MemberDto memberDto = MemberDto.builder()
+					.loginId("sender1")
+					.password("1234")
+					.amount(100000L)
+					.build();
 
+			Member sender = memberService.join(memberDto);
+
+			MemberDto memberDto = MemberDto.builder()
+					.loginId("receiver1")
+					.password("5678")
+					.amount(100000L)
+					.build();
 			String receiverId = "receiver1";
 			String receiverPw = "5678";
 			Member receiver = memberService.join(receiverId, receiverPw, 0L);
@@ -115,7 +125,7 @@ class AccountServiceTest {
 			for (int i = 0; i < numberOfThreads; i++) {
 				service.execute(() -> {
 					transaction.execute((status -> {
-							accountService.transfer(senderId, receiverId, 1L);
+						accountService.transfer(senderId, receiverId, 1L);
 						latch.countDown();
 						return null;
 					}));

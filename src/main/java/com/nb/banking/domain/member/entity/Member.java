@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,14 +14,20 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import com.nb.banking.domain.account.entity.Account;
 import com.nb.banking.global.config.entity.BaseTimeEntity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Member extends BaseTimeEntity {
 
@@ -34,6 +41,16 @@ public class Member extends BaseTimeEntity {
 	private String loginId;
 
 	private String password;
+
+	@Column(name = "activated")
+	private boolean activated;
+
+	@ManyToMany
+	@JoinTable(
+			name = "member_authority",
+			joinColumns = {@JoinColumn(name = "id", referencedColumnName = "id")},
+			inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
+	private Set<Authority> authorities;
 
 	@JoinTable(name = "connection",
 			joinColumns = {@JoinColumn(name = "member_id")},
@@ -54,11 +71,6 @@ public class Member extends BaseTimeEntity {
 	public void setAccount(Account account) {
 		this.account = account;
 		account.setOwner(this);
-	}
-
-	public Member(String loginId, String password) {
-		this.loginId = loginId;
-		this.password = password;
 	}
 
 }
