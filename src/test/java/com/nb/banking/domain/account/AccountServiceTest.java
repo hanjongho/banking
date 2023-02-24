@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -59,45 +58,65 @@ class AccountServiceTest {
 		@DisplayName("성공")
 		void success() throws Exception {
 			//given
-			MemberDto memberDto = MemberDto.builder()
-					.loginId("sender1")
-					.password("1234")
+			String senderId = "sender1";
+			String senderPw = "1234";
+
+			MemberDto memberDto1 = MemberDto.builder()
+					.loginId(senderId)
+					.password(senderPw)
 					.amount(100000L)
 					.build();
 
-			Member sender = memberService.join(memberDto);
+			transaction.execute((status -> memberService.join(memberDto1)));
 
-			MemberDto memberDto = MemberDto.builder()
-					.loginId("receiver1")
-					.password("5678")
-					.amount(100000L)
-					.build();
 			String receiverId = "receiver1";
 			String receiverPw = "5678";
-			Member receiver = memberService.join(receiverId, receiverPw, 0L);
+			MemberDto memberDto2 = MemberDto.builder()
+					.loginId(receiverId)
+					.password(receiverPw)
+					.amount(0L)
+					.build();
 
-			memberService.addConnection(senderId, receiverId);
+			transaction.execute((status -> memberService.join(memberDto2)));
 
 			//when
-			accountService.transfer(senderId, receiverId, 30000L);
+			transaction.execute((status -> {
+				memberService.addConnection(senderId, receiverId);
+				accountService.transfer(senderId, receiverId, 30000L);
+				return null;
+			}));
+
+			Member sender = memberRepository.findByLoginId(senderId).get();
+			Member receiver = memberRepository.findByLoginId(receiverId).get();
 
 			//then
 			assertEquals(70000L, sender.getAccount().getAmount());
 			assertEquals(30000L, receiver.getAccount().getAmount());
 		}
 
-		// 친구 목록 연결 재 구현
 		@Test
 		@DisplayName("실패 - 친구 연결 안되어 있을 때")
 		void fail_no_connection() throws Exception {
 			//given
 			String senderId = "Jongho";
 			String senderPw = "12345678";
-			memberService.join(senderId, senderPw, 100000L);
+
+			MemberDto memberDto1 = MemberDto.builder()
+					.loginId(senderId)
+					.password(senderPw)
+					.amount(100000L).build();
+
+			transaction.execute((status -> memberService.join(memberDto1)));
 
 			String receiverId = "Han";
 			String receiverPw = "0000";
-			memberService.join(receiverId, receiverPw, 0L);
+
+			MemberDto memberDto2 = MemberDto.builder()
+					.loginId(receiverId)
+					.password(receiverPw)
+					.amount(100000L).build();
+
+			transaction.execute((status -> memberService.join(memberDto2)));
 
 			//when
 			assertThrows(BusinessException.class, () -> accountService.transfer(senderId, receiverId, 30000L));
@@ -107,13 +126,22 @@ class AccountServiceTest {
 		@DisplayName("성공 - 100개 스레드에서 동시에 입금 - Pessimistic Lock")
 		void success_total_100_threads() throws Exception {
 			//given
-			String receiverId = "receiver";
-			String receiverPw = "1234";
-			transaction.execute((status -> memberService.join(receiverId, receiverPw, 0L)));
-
 			String senderId = "sender";
 			String senderPw = "5678";
-			transaction.execute((status -> memberService.join(senderId, senderPw, 1000L)));
+			MemberDto memberDto1 = MemberDto.builder()
+					.loginId(senderId)
+					.password(senderPw)
+					.amount(1000L).build();
+			transaction.execute((status -> memberService.join(memberDto1)));
+
+			String receiverId = "receiver";
+			String receiverPw = "1234";
+
+			MemberDto memberDto2 = MemberDto.builder()
+					.loginId(receiverId)
+					.password(receiverPw)
+					.amount(0L).build();
+			transaction.execute((status -> memberService.join(memberDto2)));
 
 			transaction.executeWithoutResult((status -> memberService.addConnection(receiverId, senderId)));
 
@@ -141,6 +169,7 @@ class AccountServiceTest {
 			assertEquals(1000L - numberOfThreads, sender.getAccount().getAmount());
 			assertEquals(0 + numberOfThreads, receiver.getAccount().getAmount());
 		}
+
 	}
 
 }

@@ -3,14 +3,11 @@ package com.nb.banking.domain.member;
 import static com.nb.banking.global.config.ApiResult.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -25,8 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nb.banking.domain.member.dto.ConnectedMemberResponseDto;
 import com.nb.banking.domain.member.dto.LoginDto;
-import com.nb.banking.domain.member.dto.TokenDto;
 import com.nb.banking.domain.member.dto.MemberDto;
+import com.nb.banking.domain.member.dto.TokenDto;
 import com.nb.banking.global.config.ApiResult;
 import com.nb.banking.global.config.security.jwt.JwtFilter;
 import com.nb.banking.global.config.security.jwt.TokenProvider;
@@ -67,7 +64,7 @@ public class MemberController {
 	}
 
 	@PostMapping("/authenticate")
-	public ResponseEntity<TokenDto> authorize(@Valid @RequestBody LoginDto loginDto) {
+	public ApiResult<TokenDto> authorize(@Valid @RequestBody LoginDto loginDto, HttpServletResponse response) {
 
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 				loginDto.getLoginId(), loginDto.getPassword());
@@ -76,11 +73,8 @@ public class MemberController {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		String jwt = tokenProvider.createToken(authentication);
-
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
-
-		return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
+		response.addHeader(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+		return OK(new TokenDto(jwt));
 	}
 
 	@GetMapping
