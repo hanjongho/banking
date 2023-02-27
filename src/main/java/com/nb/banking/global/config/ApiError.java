@@ -10,13 +10,16 @@ public class ApiError {
 
 	private final int status;
 
-	ApiError(Throwable throwable, HttpStatus status) {
-		this(throwable.getMessage(), status);
+	private String code;
+
+	ApiError(Throwable throwable, HttpStatus status, String code) {
+		this(throwable.getMessage(), status, code);
 	}
 
-	ApiError(String message, HttpStatus status) {
+	ApiError(String message, HttpStatus status, String code) {
 		this.message = message;
 		this.status = status.value();
+		this.code = code;
 	}
 
 	public String getMessage() {
@@ -32,6 +35,7 @@ public class ApiError {
 		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
 				.append("message", message)
 				.append("status", status)
+				.append("code", code)
 				.toString();
 	}
 

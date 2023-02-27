@@ -22,29 +22,30 @@ import lombok.Setter;
 @NoArgsConstructor
 public class MemberDto {
 
-   @NotNull
-   @Size(min = 3, max = 50)
-   private String loginId;
+	@NotNull
+	@Size(min = 3, max = 50)
+	private String loginId;
 
-   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-   @NotNull
-   @Size(min = 3, max = 100)
-   private String password;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@NotNull
+	@Size(min = 3, max = 100)
+	private String password;
 
-   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-   @NotNull
-   private Long amount;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@NotNull
+	private Long amount;
 
-   private Set<AuthorityDto> authorityDtoSet;
+	private Set<AuthorityDto> authorityDtoSet;
 
-   public static MemberDto from(Member member) {
-      if(member == null) return null;
+	public static MemberDto from(Member member) {
+		if (member == null)
+			return null;
 
-      return MemberDto.builder()
-              .loginId(member.getLoginId())
-              .authorityDtoSet(member.getAuthorities().stream()
-                      .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
-                      .collect(Collectors.toSet()))
-              .build();
-   }
+		return MemberDto.builder()
+				.loginId(member.getLoginId())
+				.authorityDtoSet(member.getAuthorities().stream()
+						.map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
+						.collect(Collectors.toSet()))
+				.build();
+	}
 }

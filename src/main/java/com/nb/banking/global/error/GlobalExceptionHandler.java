@@ -1,9 +1,12 @@
 package com.nb.banking.global.error;
 
-import java.util.Arrays;
+import static com.nb.banking.global.config.ApiResult.*;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
 
+import com.nb.banking.global.config.ApiResult;
 import com.nb.banking.global.error.exception.BusinessException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,15 +24,23 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+	private ResponseEntity<ApiResult<?>> newResponse(String message, HttpStatus status, String code) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		return new ResponseEntity<>(ERROR(message, status, code), headers, status);
+	}
+
 	/**
 	 *  비즈니스 로직 익셉션 처리하는 핸들러
 	 */
 	@ExceptionHandler
-	protected ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
-		log.error("handleMethodArgumentNotValidException", e);
+	protected ResponseEntity<?> handleBusinessException(BusinessException e) {
+		log.error("BusinessException", e);
+
 		final ErrorCode errorCode = e.getErrorCode();
-		final ErrorResponse response = ErrorResponse.of(errorCode);
-		return new ResponseEntity<>(response, errorCode.getHttpStatus());
+
+		return newResponse(errorCode.getDetail(), errorCode.getHttpStatus(), errorCode.getCode());
 	}
 
 	/**
@@ -37,10 +49,12 @@ public class GlobalExceptionHandler {
 	 *  주로 @RequestBody, @RequestPart 어노테이션에서 발생
 	 */
 	@ExceptionHandler
-	protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+	protected ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 		log.error("handleMethodArgumentNotValidException", e);
-		final ErrorResponse response = ErrorResponse.of(ErrorCode.PARAMETER_NOT_VALID, e.getBindingResult());
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+		final ErrorCode errorCode = ErrorCode.PARAMETER_NOT_VALID;
+
+		return newResponse(errorCode.getDetail(), errorCode.getHttpStatus(), errorCode.getCode());
 	}
 
 	/**
@@ -48,90 +62,92 @@ public class GlobalExceptionHandler {
 	 * 주로 @RequestParam enum으로 binding 못했을 경우 발생
 	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
-	protected ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
-			MethodArgumentTypeMismatchException e) {
+	protected ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
 		log.error("handleMethodArgumentTypeMismatchException", e);
-		final ErrorResponse response = ErrorResponse.of(ErrorCode._INVALID_REQUEST_PARAMETER);
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+		ErrorCode errorCode = ErrorCode._INVALID_REQUEST_PARAMETER;
+
+		return newResponse(errorCode.getDetail(), errorCode.getHttpStatus(), errorCode.getCode());
 	}
 
 	/**
 	 * Request Param 타입이 일치하지 않을 때 발생
 	 */
 	@ExceptionHandler(MissingServletRequestParameterException.class)
-	protected ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
-			MissingServletRequestParameterException e) {
+	protected ResponseEntity<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
 		log.error("handleMissingServletRequestParameterException", e);
-		final ErrorResponse response = ErrorResponse.of(ErrorCode._INVALID_REQUEST_PARAMETER);
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+		ErrorCode errorCode = ErrorCode._INVALID_REQUEST_PARAMETER;
+
+		return newResponse(errorCode.getDetail(), errorCode.getHttpStatus(), errorCode.getCode());
 	}
 
 	/**
 	 * 지원하지 않은 HTTP method 호출 할 경우 발생
 	 */
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-	protected ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
-			HttpRequestMethodNotSupportedException e) {
+	protected ResponseEntity<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
 		log.error("handleHttpRequestMethodNotSupportedException", e);
-		final ErrorResponse response = ErrorResponse.of(ErrorCode._METHOD_NOT_ALLOWED);
-		return new ResponseEntity<>(response, HttpStatus.METHOD_NOT_ALLOWED);
+
+		ErrorCode errorCode = ErrorCode._METHOD_NOT_ALLOWED;
+
+		return newResponse(errorCode.getDetail(), errorCode.getHttpStatus(), errorCode.getCode());
 	}
 
 	/**
 	 * 지원하지 않은 HTTP Media PendingType 호출 할 경우 발생
 	 */
 	@ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-	protected ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(
-			HttpMediaTypeNotSupportedException e) {
+	protected ResponseEntity<?> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
 		log.error("handleHttpMediaTypeNotSupportedException", e);
-		final ErrorResponse response = ErrorResponse.of(ErrorCode._UNSUPPORTED_MEDIA_TYPE);
-		return new ResponseEntity<>(response, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+
+		ErrorCode errorCode = ErrorCode._UNSUPPORTED_MEDIA_TYPE;
+
+		return newResponse(errorCode.getDetail(), errorCode.getHttpStatus(), errorCode.getCode());
 	}
 
 	/**
 	 * Authentication 객체가 필요한 권한을 보유하지 않은 경우 발생합
 	 */
-	// @ExceptionHandler(AccessDeniedException.class)
-	// protected ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
-	//     log.error("handleAccessDeniedException", e);
-	//     final ErrorResponse response = ErrorResponse.of(ErrorCode._UNAUTHORIZED);
-	//     return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-	// }
+	@ExceptionHandler(AccessDeniedException.class)
+	protected ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
+		log.error("handleAccessDeniedException", e);
+
+		ErrorCode errorCode = ErrorCode._UNAUTHORIZED;
+
+		return newResponse(errorCode.getDetail(), errorCode.getHttpStatus(), errorCode.getCode());
+	}
 
 	/**
 	 * 로그인 정보가 일치하지 않을 때
 	 */
-	// @ExceptionHandler({BadCredentialsException.class})
-	// protected ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException e) {
-	//     log.error("handleBadCredentialsException", e);
-	//     final ErrorResponse response = ErrorResponse.of(ErrorCode.LOGIN_FAILED);
-	//     return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-	// }
+	@ExceptionHandler({BadCredentialsException.class})
+	protected ResponseEntity<?> handleBadCredentialsException(BadCredentialsException e) {
+		log.error("handleBadCredentialsException", e);
+
+		ErrorCode errorCode = ErrorCode.LOGIN_FAILED;
+
+		return newResponse(errorCode.getDetail(), errorCode.getHttpStatus(), errorCode.getCode());
+	}
 
 	/**
 	 * 파일 업로드 시 멀티파트 헤더를 설정하지 않았을때 에러
 	 */
 	@ExceptionHandler({MultipartException.class})
-	protected ResponseEntity<ErrorResponse> handleMultipartException(MultipartException e) {
+	protected ResponseEntity<?> handleMultipartException(MultipartException e) {
 		log.error("handleMultipartException", e);
-		final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_MULTIPART_HEADER);
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+		ErrorCode errorCode = ErrorCode.NOT_MULTIPART_HEADER;
+
+		return newResponse(errorCode.getDetail(), errorCode.getHttpStatus(), errorCode.getCode());
 	}
 
-	/**
-	 * 아마존 S3 접근 오류
-	 */
-    /*@ExceptionHandler({AmazonS3Exception.class})
-    protected ResponseEntity<ErrorResponse> handleMultipartException(AmazonS3Exception e) {
-        log.error("handleAmazonS3Exception", e);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.AMAZON_ACCESS_DENIED);
-        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-    }*/
 	@ExceptionHandler
-	protected ResponseEntity<ErrorResponse> handleAllException(Exception e) {
+	protected ResponseEntity<?> handleAllException(Exception e) {
 		log.error("Exception : {}", e);
-		final ErrorResponse response = ErrorResponse.of(ErrorCode._INTERNAL_SERVER_ERROR);
-		log.info(Arrays.stream(e.getStackTrace()).toString());
-		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
+		ErrorCode errorCode = ErrorCode._INTERNAL_SERVER_ERROR;
+
+		return newResponse(errorCode.getDetail(), errorCode.getHttpStatus(), errorCode.getCode());
 	}
 }

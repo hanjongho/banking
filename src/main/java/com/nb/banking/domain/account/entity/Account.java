@@ -35,7 +35,12 @@ public class Account extends BaseTimeEntity {
 	private Member owner;
 
 	public Account(Long amount) {
-		this.accountId = RandomStringUtils.randomNumeric(8);
+		this.accountId =
+				RandomStringUtils.randomNumeric(3)
+						+ "-"
+						+ RandomStringUtils.randomNumeric(3)
+						+ "-"
+						+ RandomStringUtils.randomNumeric(6);
 		this.amount = amount;
 	}
 
