@@ -1,6 +1,5 @@
 package com.nb.banking.global.config.security;
 
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -10,9 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.filter.CorsFilter;
 
 import com.nb.banking.global.config.security.jwt.JwtAccessDeniedHandler;
 import com.nb.banking.global.config.security.jwt.JwtAuthenticationEntryPoint;
@@ -45,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
-		// token을 사용하는 방식이기 때문에 csrf를 disable합니다.
+				// token을 사용하는 방식이기 때문에 csrf를 disable합니다.
 				.csrf().disable()
 
 				.exceptionHandling()

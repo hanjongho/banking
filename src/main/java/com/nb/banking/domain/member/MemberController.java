@@ -45,27 +45,9 @@ public class MemberController {
 		return OK(MemberDto.from(memberService.join(memberDto)));
 	}
 
-	// 내 친구 목록 조회 API
-	// TODO id -> JwtAuthentication 객체의 id를 불러오는 과정으로 변경
-	@GetMapping("/connections")
-	@PreAuthorize("hasAnyRole('MEMBER','ADMIN')")
-	public ApiResult<List<ConnectedMemberResponseDto>> connections(Authentication authentication) {
-		return OK(memberService.findAllConnectedMember(authentication.getName())
-				.stream()
-				.map(ConnectedMemberResponseDto::new)
-				.collect(Collectors.toList()));
-	}
-
-	// 친구 추가 API
-	@PostMapping("/connections/{friendId}")
-	@PreAuthorize("hasAnyRole('MEMBER','ADMIN')")
-	public void addConnection(Authentication authentication, String friendId) {
-		memberService.addConnection(authentication.getName(), friendId);
-	}
-
+	// 로그인 API
 	@PostMapping("/authenticate")
 	public ApiResult<TokenDto> authorize(@Valid @RequestBody LoginDto loginDto, HttpServletResponse response) {
-
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 				loginDto.getLoginId(), loginDto.getPassword());
 
@@ -75,6 +57,25 @@ public class MemberController {
 		String jwt = tokenProvider.createToken(authentication);
 		response.addHeader(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 		return OK(new TokenDto(jwt));
+	}
+
+	// 내 친구 목록 조회 API
+	@GetMapping("/connections")
+	@PreAuthorize("hasAnyRole('MEMBER','ADMIN')")
+	public ApiResult<List<ConnectedMemberResponseDto>> connections() {
+		String loginId = SecurityContextHolder.getContext().getAuthentication().getName();
+		return OK(memberService.findAllConnectedMember(loginId)
+				.stream()
+				.map(ConnectedMemberResponseDto::new)
+				.collect(Collectors.toList()));
+	}
+
+	// 친구 추가 API
+	@PostMapping("/connections/{friendId}")
+	@PreAuthorize("hasAnyRole('MEMBER','ADMIN')")
+	public void addConnection(@PathVariable String friendId) {
+		String loginId = SecurityContextHolder.getContext().getAuthentication().getName();
+		memberService.addConnection(loginId, friendId);
 	}
 
 	@GetMapping

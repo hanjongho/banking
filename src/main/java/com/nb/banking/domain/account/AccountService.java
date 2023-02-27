@@ -5,6 +5,7 @@ import static com.nb.banking.global.error.ErrorCode.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nb.banking.domain.account.entity.Account;
 import com.nb.banking.domain.member.MemberRepository;
 import com.nb.banking.domain.member.entity.Member;
 import com.nb.banking.global.error.exception.BadRequestException;
@@ -19,7 +20,7 @@ public class AccountService {
 	private final MemberRepository memberRepository;
 
 	@Transactional
-	public void transfer(String senderId, String receiverId, Long transferAmount) {
+	public void transfer(String senderId, Long transferAmount, String receiverId) {
 		Member sender = memberRepository.findByWithPessimisticLock(senderId)
 				.orElseThrow(() -> new BadRequestException(MEMBER_NOT_FOUND));
 		Member receiver = memberRepository.findByWithPessimisticLock(receiverId)
@@ -32,8 +33,15 @@ public class AccountService {
 		if (sender.getAccount().getAmount() < transferAmount) {
 			throw new BusinessException(ACCOUNT_INSUFFICIENT);
 		}
+
 		sender.getAccount().decreaseAmount(transferAmount);
 		receiver.getAccount().increaseAmount(transferAmount);
 		// TODO  알림 API -> Event 처리
 	}
+
+	public Account getMyAccountInfo(String loginId) {
+		return memberRepository.findByLoginId(loginId)
+				.orElseThrow(() -> new BadRequestException(MEMBER_NOT_FOUND)).getAccount();
+	}
+
 }

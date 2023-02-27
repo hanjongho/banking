@@ -82,7 +82,7 @@ class AccountServiceTest {
 			//when
 			transaction.execute((status -> {
 				memberService.addConnection(senderId, receiverId);
-				accountService.transfer(senderId, receiverId, 30000L);
+				accountService.transfer(senderId, 30000L, receiverId);
 				return null;
 			}));
 
@@ -119,7 +119,7 @@ class AccountServiceTest {
 			transaction.execute((status -> memberService.join(memberDto2)));
 
 			//when
-			assertThrows(BusinessException.class, () -> accountService.transfer(senderId, receiverId, 30000L));
+			assertThrows(BusinessException.class, () -> accountService.transfer(senderId, 30000L, receiverId));
 		}
 
 		@Test
@@ -143,7 +143,7 @@ class AccountServiceTest {
 					.amount(0L).build();
 			transaction.execute((status -> memberService.join(memberDto2)));
 
-			transaction.executeWithoutResult((status -> memberService.addConnection(receiverId, senderId)));
+			transaction.executeWithoutResult((status -> memberService.addConnection(senderId, receiverId)));
 
 			//when
 			int numberOfThreads = 100;
@@ -153,7 +153,7 @@ class AccountServiceTest {
 			for (int i = 0; i < numberOfThreads; i++) {
 				service.execute(() -> {
 					transaction.execute((status -> {
-						accountService.transfer(senderId, receiverId, 1L);
+						accountService.transfer(senderId, 1L, receiverId);
 						latch.countDown();
 						return null;
 					}));

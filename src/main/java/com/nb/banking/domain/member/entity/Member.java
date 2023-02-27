@@ -14,8 +14,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import com.nb.banking.domain.account.entity.Account;
 import com.nb.banking.global.config.entity.BaseTimeEntity;
 

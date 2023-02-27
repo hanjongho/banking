@@ -22,12 +22,12 @@ public class ApiResult<T> {
 		return new ApiResult<>(true, response, null);
 	}
 
-	public static ApiResult<?> ERROR(Throwable throwable, HttpStatus status) {
-		return new ApiResult<>(false, null, new ApiError(throwable, status));
+	public static ApiResult<?> ERROR(Throwable throwable, HttpStatus status, String code) {
+		return new ApiResult<>(false, null, new ApiError(throwable, status, code));
 	}
 
-	public static ApiResult<?> ERROR(String errorMessage, HttpStatus status) {
-		return new ApiResult<>(false, null, new ApiError(errorMessage, status));
+	public static ApiResult<?> ERROR(String errorMessage, HttpStatus status, String code) {
+		return new ApiResult<>(false, null, new ApiError(errorMessage, status, code));
 	}
 
 	public boolean isSuccess() {

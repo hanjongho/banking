@@ -80,7 +80,6 @@ public class MemberService {
 		loginMember.addFriend(friendMember);
 	}
 
-
 	@Transactional(readOnly = true)
 	public Optional<Member> getUserWithAuthorities(String username) {
 		return memberRepository.findOneWithAuthoritiesByLoginId(username);
