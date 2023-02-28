@@ -26,7 +26,7 @@ public class Account extends BaseTimeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String accountId;
+	private String accountNo;
 
 	private Long amount;
 
@@ -35,7 +35,7 @@ public class Account extends BaseTimeEntity {
 	private Member owner;
 
 	public Account(Long amount) {
-		this.accountId =
+		this.accountNo =
 				RandomStringUtils.randomNumeric(3)
 						+ "-"
 						+ RandomStringUtils.randomNumeric(3)

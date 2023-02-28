@@ -1,5 +1,8 @@
-insert into member (login_id, password, activated) values ('admin', '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 1);
-insert into member (login_id, password, activated) values ('user', '$2a$08$UkVvwpULis18S19S5pZFn.YHPZt3oaqHZnDwqbCW9pft6uFtkXKDC', 1);
+insert into account (account_no, amount) values ('264-167-156072', 100000);
+insert into account (account_no, amount) values ('237-697-281460', 0);
+
+insert into member (login_id, password, activated, account_id) values ('numble-hanjongho', '$2a$10$Z.TSAwpQEA3ErAlbanSf9eb9lZkhjy0NtaoSNjFoi.CvWJvAEnhW6', 1, 1);
+insert into member (login_id, password, activated, account_id) values ('numble-tester', '$2a$10$BqEiVYY/uQgIX4dBekhdCu2zr0eMMHprcAGnzjXIJuen7n./QMOAK', 1, 2);
 
 insert into authority (authority_name) values ('ROLE_MEMBER');
 insert into authority (authority_name) values ('ROLE_ADMIN');

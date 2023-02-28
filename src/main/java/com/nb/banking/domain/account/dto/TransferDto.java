@@ -9,8 +9,7 @@ import lombok.Getter;
 public class TransferDto {
 
 	@NotNull
-	@Size(min = 14, max = 14)
-	private String receiverAccountId;
+	private String receiverLoginId;
 
 	@NotNull
 	private Long transferAmount;

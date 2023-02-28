@@ -67,7 +67,7 @@ public class MemberService {
 	}
 
 	@Transactional
-	public void addConnection(String loginId, String friendLoginId) {
+	public String addConnection(String loginId, String friendLoginId) {
 		Member loginMember = memberRepository.findByLoginId(loginId)
 				.orElseThrow(() -> new BadRequestException(MEMBER_NOT_FOUND));
 		Member friendMember = memberRepository.findByLoginId(friendLoginId)
@@ -78,6 +78,7 @@ public class MemberService {
 		}
 
 		loginMember.addFriend(friendMember);
+		return friendMember.getLoginId();
 	}
 
 	@Transactional(readOnly = true)
