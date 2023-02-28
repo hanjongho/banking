@@ -1,4 +1,4 @@
-package com.nb.banking.domain.member;
+package com.nb.banking.global.config.security;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nb.banking.domain.member.MemberRepository;
 import com.nb.banking.domain.member.entity.Member;
 
 @Component("userDetailsService")

@@ -64,7 +64,7 @@ public enum ErrorCode {
 
 	/* Account 관련 오류 */
 	ACCOUNT_NOT_FOUND(NOT_FOUND, "A001", "해당 하는 계좌정보를 찾을 수 없습니다"),
-	ACCOUNT_INSUFFICIENT(NOT_FOUND, "A002", "계좌의 잔액이 부족합니다.");
+	ACCOUNT_INSUFFICIENT(BAD_REQUEST, "A002", "계좌의 잔액이 부족합니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;

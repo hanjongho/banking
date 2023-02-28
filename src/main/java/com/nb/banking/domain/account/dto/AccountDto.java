@@ -24,7 +24,7 @@ public class AccountDto {
 			return null;
 
 		return AccountDto.builder()
-				.accountId(account.getAccountId())
+				.accountId(account.getAccountNo())
 				.amount(account.getAmount())
 				.build();
 	}

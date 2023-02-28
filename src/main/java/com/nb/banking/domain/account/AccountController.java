@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nb.banking.domain.account.dto.AccountDto;
@@ -17,7 +18,8 @@ import com.nb.banking.global.config.ApiResult;
 
 import lombok.RequiredArgsConstructor;
 
-@RestController("/account")
+@RestController
+@RequestMapping("api/account")
 @RequiredArgsConstructor
 public class AccountController {
 
@@ -28,7 +30,7 @@ public class AccountController {
 	public ApiResult<TransferDto> transfer(@Valid @RequestBody TransferDto transferDto) {
 		String senderId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		accountService.transfer(senderId, transferDto.getTransferAmount(), transferDto.getReceiverAccountId());
+		accountService.transfer(senderId, transferDto.getTransferAmount(), transferDto.getReceiverLoginId());
 		return OK(transferDto);
 	}
 

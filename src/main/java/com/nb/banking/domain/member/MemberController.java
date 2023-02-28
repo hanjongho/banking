@@ -66,16 +66,16 @@ public class MemberController {
 		String loginId = SecurityContextHolder.getContext().getAuthentication().getName();
 		return OK(memberService.findAllConnectedMember(loginId)
 				.stream()
-				.map(ConnectedMemberResponseDto::new)
+				.map(m -> new ConnectedMemberResponseDto(m.getLoginId()))
 				.collect(Collectors.toList()));
 	}
 
 	// 친구 추가 API
 	@PostMapping("/connections/{friendId}")
 	@PreAuthorize("hasAnyRole('MEMBER','ADMIN')")
-	public void addConnection(@PathVariable String friendId) {
+	public ApiResult<ConnectedMemberResponseDto> addConnection(@PathVariable String friendId) {
 		String loginId = SecurityContextHolder.getContext().getAuthentication().getName();
-		memberService.addConnection(loginId, friendId);
+		return OK(new ConnectedMemberResponseDto(memberService.addConnection(loginId, friendId)));
 	}
 
 	@GetMapping

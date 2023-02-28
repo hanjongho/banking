@@ -11,7 +11,7 @@ public class ConnectedMemberResponseDto {
 
 	private String loginId;
 
-	public ConnectedMemberResponseDto(Member member) {
-		this.loginId = member.getLoginId();
+	public ConnectedMemberResponseDto(String loginId) {
+		this.loginId = loginId;
 	}
 }
