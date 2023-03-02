@@ -476,6 +476,12 @@ synchronized 근본적인 한계점
 
 </details>
 
-  
-   
-   
+### TODO
+
+#### 1. jwt를 이용한 토큰방식이 아닌 session으로 로그인 방식 구현
+* 서버가 여러 대가 되었을 때 세션을 어떤식으로 유지할 지 고민해보기
+  * sticky, session clustering, redis 등 고려
+#### 2. nginx를 통해 리버스 프록시를 이용하여 로드밸런싱 구현
+#### 3. CQRS 패턴고려 db를 master/slave로 이중화 시키기
+* 스프링 AOP를 사용하여 @Transactional의 readOnly 값에 따라 slave/master 분기
+#### 4. Ngrinder를 통해 WAS, DB 부하 측정
